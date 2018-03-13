@@ -1,0 +1,25 @@
+function [snr,sigma2_signal,sigma2_noise]=EX_snr(idx,y)
+% [snr]=EX_snr(idx,y)
+%
+% computes signal to noise ratio SNR
+% compare : Mehring et al (2003) Nature Neuroscience
+%
+% idx   :   directional index
+% y     :   values corresponding to index
+%           length(idx)=length(y)
+%
+%
+% nawrot@neurobiologie.uni-freiburg.de
+
+x=[];
+for dir=1:max(idx)
+    ind=find(idx==dir);
+    avg(dir)=mean(y(ind));
+    x=[x;y(ind)-avg(dir)];
+end
+sigma2_signal=var(avg);
+sigma2_noise=var(x);
+snr=sigma2_signal/sigma2_noise;
+
+
+    

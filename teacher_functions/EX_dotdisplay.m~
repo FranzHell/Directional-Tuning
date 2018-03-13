@@ -1,0 +1,17 @@
+function dotdisplay(data,TimeUnitsMS)
+%
+% dotdisplay
+%
+% input: 
+% data  :   full 0/1 spike matrix with dimensions rows x cols: 
+%           time x trial or time x channel
+% channel
+% assumes: figure open
+% c Martin Nawrot
+%
+
+set(gca,'ylim',[])
+set(gca,'xlim',[])
+
+[x,y]=find(data);
+line([x x]',[y-.25 y+.25]','color','k','linewidth',0.5);

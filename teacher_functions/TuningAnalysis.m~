@@ -1,0 +1,57 @@
+% assume data file to be loaded
+
+% 0. assign variables
+TimeUnitsMS=SparseFormat.TimeResolutionMS;
+wMS=[1500 2000];
+w=floor(wMS/TimeUnitsMS);
+w(1)=w(1)+1;
+TMS=diff(wMS);
+
+% spike count
+dir_idx=[];
+rate=[];
+for dir=1:6;
+    Rate{dir}=sum(full(SparseFormat.Data{dir}(w(1):w(2),:)),1)/TMS*1000;
+    rate=[rate;Rate{dir}'];
+    dir_idx=[dir_idx;ones(size(Rate{dir},2),1)*dir];
+    MeanRate(dir)=mean(Rate{dir});
+    %x=[x;Rate{dir}'-MeanRate(dir)];
+end
+
+snr=EX_snr(dir_idx,rate);
+
+% we have 6 directions defined as direction 1 through 6
+directions=[1,2,3,4,5,6];
+% define polar coordinates in radian (Bogenmass) for the 6 directions
+theta=(directions-1)./6*2*pi;
+% transform to cartesian coordinates for compass plot
+[x,y]=pol2cart(theta,MeanRate);
+% voctorial sum
+X=sum(x);
+Y=sum(y);
+
+
+figure
+% tunig curve
+subplot(2,2,1)
+set(gca,'box','on')
+set(gca,'xtick',[directions,directions(end)+1])
+set(gca,'xtickl',[directions,directions(1)])
+hold on
+for dir=1:6
+    plot(dir,Rate{dir},'o','markerfacecolor',[.5 .5 .5], ...
+        'markeredgecolor',[.5 .5 .5],'markersize',5)
+end
+
+plot([directions,directions(end)+1],[MeanRate,MeanRate(1)],'.-','color','k','linew',2)
+
+% compass plot
+subplot(2,2,2)
+pol=polar(0,max(MeanRate));
+hold on
+pa=patch(x,y,[.7 .7 .7])
+alpha(0.5);
+c1=compass(x,y);
+set(c1,'color','k','linew',1);
+c2=compass(X,Y);
+set(c2,'color','b','linew',2);
